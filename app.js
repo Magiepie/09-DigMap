@@ -24,8 +24,8 @@ canvas.onkeydown=e=>{const step=80/view.zoom;if(e.key==='ArrowLeft')view.x-=step
 $('#plus').onclick=()=>zoom(1.3);$('#minus').onclick=()=>zoom(1/1.3);$('#home').onclick=()=>{Object.assign(view,{x:3222,y:3218,zoom:4,plane:0});$('#plane').value='0';hover=null;requestDraw()};
 $('#goto').onsubmit=e=>{e.preventDefault();Object.assign(view,{x:Number($('#x').value),y:Number($('#y').value),plane:Number($('#plane').value)});hover=null;$('#coords').textContent=`X ${view.x} · Y ${view.y} · Plane ${view.plane}`;requestDraw()};
 $('#plane').onchange=()=>{view.plane=Number($('#plane').value);requestDraw()};
-$('#search').oninput=e=>$('#results').textContent=e.target.value?'No matching players. No uploads yet.':'No player uploads yet.';
 requestDraw();
+
 
 
 

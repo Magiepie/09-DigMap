@@ -21,7 +21,6 @@ document.querySelector('#search').oninput=renderPlayers;
 document.querySelector('#community').onchange=requestDraw;
 document.querySelector('#export-community').onclick=()=>download(community);
 const submit=document.querySelector('#submit-digs'),repo=window.GITHUB_REPOSITORY;
-if(/^[\w.-]+\/[\w.-]+$/.test(repo||'')){submit.href='https://github.com/'+repo+'/issues/new?template=dig-upload.yml';submit.target='_blank';submit.rel='noopener'}else{submit.removeAttribute('href');submit.setAttribute('aria-disabled','true');submit.textContent='Submit digs (available on GitHub Pages)'}
 async function loadPublished(){try{if(location.protocol==='file:'){showMessage('Preview through a local web server or GitHub Pages to load shared player JSON.');rebuild();return}const response=await fetch('data/atlas.json',{cache:'no-cache'});if(!response.ok)throw Error('Unable to load shared player data.');const atlas=await response.json();if(!Array.isArray(atlas.players))throw Error('Invalid published atlas.');const loaded=atlas.players.map(value=>DigData.fromJSON(value));players.clear();for(const p of loaded){const key=p.username.toLowerCase();if(players.has(key))DigData.merge(players.get(key),p);else players.set(key,p)}rebuild();showMessage(players.size?'Showing published community data. Submit an Issue to add your digs.':'No published uploads yet. Be the first to submit your digs.')}catch(error){showMessage('Shared data could not be loaded. Refresh to retry.');rebuild()}}
 loadPublished();
 
@@ -38,3 +37,4 @@ let editMode=false;
 document.querySelector('#edit-mode').onclick=()=>{editMode=!editMode;drag=null;const button=document.querySelector('#edit-mode');button.textContent='Editing mode: '+(editMode?'On':'Off');button.setAttribute('aria-pressed',String(editMode));canvas.style.cursor=editMode?'crosshair':''};
 
 function updateSubmissionLink(){const state=DigSubmission.link(window.GITHUB_REPOSITORY,draft);submit.href=state.url;submit.textContent=state.attachment?'Submit digs (attach JSON) ↗':'Submit digs ↗';document.querySelector('#submission-help').textContent=state.empty?'Mark tiles above, then Submit digs will prefill your Issue.':state.attachment?'This draft is too large to prefill a link. Download your JSON and attach it in the Issue.':'Your '+DigData.count(draft).toLocaleString()+' dug tiles will be filled into the Issue automatically. Just review and submit.'}
+
