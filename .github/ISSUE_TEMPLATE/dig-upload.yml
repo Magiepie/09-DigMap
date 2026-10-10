@@ -9,9 +9,10 @@ body:
   - type: textarea
     id: player-file
     attributes:
-      label: Player JSON attachment
-      description: Attach one .json file (maximum 5 MB). Keep the attachment link GitHub inserts in this field.
-      placeholder: Drop your player.json file here or use the attachment button below.
+      label: Player JSON
+      description: Paste the JSON copied by the map, or attach one .json file (maximum 5 MB).
+      placeholder: Paste copied digs here, or attach your JSON file.
     validations:
       required: true
+
 

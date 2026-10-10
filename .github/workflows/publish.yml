@@ -28,12 +28,12 @@ jobs:
           node-version: '22'
       - name: Validate data code
         run: |
-          node test-dig-data.cjs
-          node test-outline.cjs
-          node test-issues.cjs
-          node test-attachments.cjs
-          node test-draft.cjs
-          node test-submission.cjs
+          node tests/test-dig-data.cjs
+          node tests/test-outline.cjs
+          node tests/test-issues.cjs
+          node tests/test-attachments.cjs
+          node tests/test-draft.cjs
+          node tests/test-submission.cjs
       - name: Merge pending issue submissions
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -75,6 +75,7 @@ jobs:
       - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
 
 
 

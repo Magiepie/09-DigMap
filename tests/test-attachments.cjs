@@ -1,5 +1,5 @@
 'use strict';
-const assert=require('node:assert/strict'),I=require('./scripts/process-issues.cjs'),D=require('./dig-data.js');
+const assert=require('node:assert/strict'),I=require('../scripts/process-issues.cjs'),D=require('../dig-data.js');
 const url='https://github.com/user-attachments/files/12345/player.json',body='### Player JSON attachment\n\n[player.json]('+url+')\n';
 (async()=>{assert.equal(I.attachmentURL(body),url);assert.throws(()=>I.attachmentURL(body.replace('.json)', '.zip)')));assert.throws(()=>I.attachmentURL(body+'\n[extra]('+url+')'));assert.throws(()=>I.attachmentURL(body.replace('github.com','evil.example')));assert.equal(I.allowedDownload(new URL('https://localhost/a.json')),false);assert.equal(I.allowedDownload(new URL('https://github.com.evil.example/a.json')),false);
 const payload=JSON.stringify({username:'Attached Player',tiles:[[3222,3218,0],[3222,3218,0],[3223,3218,0]]});const p=await I.loadSubmission(body,async()=>new Response(payload));assert.equal(p.username,'Attached Player');assert.equal(D.count(p),2);
@@ -7,4 +7,5 @@ let requests=0;await I.loadSubmission(body,async()=>{requests++;return requests=
 await assert.rejects(()=>I.loadSubmission(body,async()=>new Response(null,{status:302,headers:{location:'http://localhost/internal'}})),/host/);await assert.rejects(()=>I.loadSubmission(body,async()=>new Response('{}',{headers:{'content-length':String(6*1024*1024)}})),/5 MB/);await assert.rejects(()=>I.loadSubmission(body,async()=>new Response('not json')));await assert.rejects(()=>I.loadSubmission(body,async()=>new Response('{}',{status:404})),/404/);await assert.rejects(()=>I.loadSubmission(body,async()=>new Response(JSON.stringify({username:'Empty',tiles:[]}))),/at least one/);
 const attributed=await I.loadSubmission(body,async()=>new Response(JSON.stringify({username:'Spoofed',tiles:[[1,2,0]]})),'Magiepie');assert.equal(attributed.username,'Magiepie');const anonymous=await I.loadSubmission(body,async()=>new Response(JSON.stringify({tiles:[[1,2,0]]})),'Magiepie');assert.equal(anonymous.username,'Magiepie');
 console.log('PASS: attachment parsing/download, redirects, duplicates, size limits and invalid input.');})().catch(e=>{console.error(e);process.exitCode=1});
+
 
