@@ -32,6 +32,8 @@ jobs:
           node test-outline.cjs
           node test-issues.cjs
           node test-attachments.cjs
+          node test-draft.cjs
+          node test-submission.cjs
       - name: Merge pending issue submissions
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -61,7 +63,7 @@ jobs:
           REPOSITORY: ${{ github.repository }}
         run: |
           mkdir -p _site/data
-          cp index.html style.css app.js dig-data.js layers.js map-index.js .nojekyll _site/
+          cp index.html style.css app.js dig-data.js submission.js layers.js map-index.js .nojekyll _site/
           cp -r map_image _site/
           cp data/atlas.json data/community.json data/index.json data/example-player.json _site/data/
           cp -r data/players _site/data/
@@ -73,6 +75,8 @@ jobs:
       - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+
 
 
 

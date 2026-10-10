@@ -15,7 +15,7 @@ $('#status').textContent=`${available.size.toLocaleString()} supplied regions ·
 if(cache.size>240)for(const key of cache.keys()){const [p,x,y]=key.split('_').map(Number);if(p!==view.plane||x*64<min.x-128||x*64>max.x+128||y*64<min.y-128||y*64>max.y+128)cache.delete(key);if(cache.size<=180)break}}
 function zoom(factor,x=width/2,y=height/2){const anchor=world(x,y);view.zoom=Math.max(.3,Math.min(24,view.zoom*factor));view.x=anchor.x-(x-width/2)/view.zoom;view.y=anchor.y+(y-height/2)/view.zoom;requestDraw()}
 new ResizeObserver(()=>{const r=canvas.getBoundingClientRect(),dpr=devicePixelRatio||1;width=r.width;height=r.height;canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);requestDraw()}).observe(canvas);
-canvas.onpointerdown=e=>{if(e.button!==0)return;canvas.focus();canvas.setPointerCapture(e.pointerId);drag={...local(e),id:e.pointerId}};
+canvas.onpointerdown=e=>{if(e.button!==0)return;canvas.focus();if(e.ctrlKey||(typeof editMode!=='undefined'&&editMode)){e.preventDefault();const point=local(e),tile=world(point.x,point.y);if(typeof toggleDraftDig==='function')toggleDraftDig(Math.floor(tile.x),Math.floor(tile.y),view.plane);return}canvas.setPointerCapture(e.pointerId);drag={...local(e),id:e.pointerId}};
 canvas.onpointermove=e=>{const p=local(e);if(drag&&drag.id===e.pointerId){view.x-=(p.x-drag.x)/view.zoom;view.y+=(p.y-drag.y)/view.zoom;drag={...p,id:e.pointerId}}hover=world(p.x,p.y);$('#coords').textContent=`X ${Math.floor(hover.x)} · Y ${Math.floor(hover.y)} · Plane ${view.plane}`;requestDraw()};
 for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(event,()=>drag=null);
 canvas.onpointerleave=()=>{if(!drag){hover=null;requestDraw()}};
@@ -26,4 +26,6 @@ $('#goto').onsubmit=e=>{e.preventDefault();Object.assign(view,{x:Number($('#x').
 $('#plane').onchange=()=>{view.plane=Number($('#plane').value);requestDraw()};
 $('#search').oninput=e=>$('#results').textContent=e.target.value?'No matching players. No uploads yet.':'No player uploads yet.';
 requestDraw();
+
+
 

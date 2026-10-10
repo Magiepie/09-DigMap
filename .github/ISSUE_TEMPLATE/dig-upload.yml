@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Upload one .json file below. Drag it into the field, paste it, or use the attachment button. Wait until GitHub finishes uploading, then submit the Issue. Your username is read from the file. Repeat uploads merge with your existing digs. Submissions are public.
+        Upload one .json file below. Drag it into the field, paste it, or use the attachment button. Wait until GitHub finishes uploading, then submit the Issue. Your player layer uses the GitHub account submitting this Issue; no username is needed in the JSON. Repeat uploads merge with your existing digs. Submissions are public.
   - type: textarea
     id: player-file
     attributes:
@@ -14,3 +14,4 @@ body:
       placeholder: Drop your player.json file here or use the attachment button below.
     validations:
       required: true
+
