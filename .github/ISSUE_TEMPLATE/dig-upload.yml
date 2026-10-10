@@ -1,17 +1,16 @@
 name: Submit dug tiles
-description: Add your dug coordinates to the shared map.
+description: Upload your player JSON file to add digs to the community map.
 title: "[Dig upload] "
 body:
   - type: markdown
     attributes:
       value: |
-        Paste your readable player JSON below. Repeat uploads merge with your existing digs. Each tile is [x, y, plane].
+        Upload one .json file below. Drag it into the field, paste it, or use the attachment button. Wait until GitHub finishes uploading, then submit the Issue. Your username is read from the file. Repeat uploads merge with your existing digs. Submissions are public.
   - type: textarea
-    id: player-json
+    id: player-file
     attributes:
-      label: Player JSON
-      description: Include your RuneScape username and dug tiles. This submission and its data will be public.
-      placeholder: '{"username":"PlayerName","tiles":[[3222,3218,0],[3223,3218,0]]}'
-      render: json
+      label: Player JSON attachment
+      description: Attach one .json file (maximum 5 MB). Keep the attachment link GitHub inserts in this field.
+      placeholder: Drop your player.json file here or use the attachment button below.
     validations:
       required: true

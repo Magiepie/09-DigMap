@@ -31,6 +31,7 @@ jobs:
           node test-dig-data.cjs
           node test-outline.cjs
           node test-issues.cjs
+          node test-attachments.cjs
       - name: Merge pending issue submissions
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -51,7 +52,7 @@ jobs:
             const fs = require('fs');
             const results = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + '/dig-results.json', 'utf8'));
             for (const item of results) {
-              const body = item.ok ? 'Your JSON digs have been merged into the repository. The map deployment is running in Actions.' : 'The upload was not accepted: ' + item.error + '\n\nCorrect the JSON and reopen this issue to retry.';
+              const body = item.ok ? 'Your JSON digs have been merged into the repository. The map deployment is running in Actions.' : 'The upload was not accepted: ' + item.error + '\n\nCorrect or replace the JSON attachment and reopen this issue to retry.';
               await github.rest.issues.createComment({...context.repo, issue_number: item.number, body});
               await github.rest.issues.update({...context.repo, issue_number: item.number, state: 'closed'});
             }
@@ -72,5 +73,6 @@ jobs:
       - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
 
 
