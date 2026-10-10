@@ -1,0 +1,76 @@
+name: Update digs and publish map
+on:
+  issues:
+    types: [opened, edited, reopened]
+  push:
+  workflow_dispatch:
+permissions:
+  contents: write
+  issues: write
+  pages: write
+  id-token: write
+concurrency:
+  group: digmap-publish
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.event_name != 'push' || github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate data code
+        run: |
+          node test-dig-data.cjs
+          node test-outline.cjs
+          node test-issues.cjs
+      - name: Merge pending issue submissions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/process-issues.cjs ingest
+      - name: Commit shared JSON data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/players data/owners.json data/index.json data/community.json data/atlas.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update shared dig data"
+            git push
+          fi
+      - name: Report issue validation
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const results = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + '/dig-results.json', 'utf8'));
+            for (const item of results) {
+              const body = item.ok ? 'Your JSON digs have been merged into the repository. The map deployment is running in Actions.' : 'The upload was not accepted: ' + item.error + '\n\nCorrect the JSON and reopen this issue to retry.';
+              await github.rest.issues.createComment({...context.repo, issue_number: item.number, body});
+              await github.rest.issues.update({...context.repo, issue_number: item.number, state: 'closed'});
+            }
+      - name: Package static map
+        env:
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          mkdir -p _site/data
+          cp index.html style.css app.js dig-data.js layers.js map-index.js .nojekyll _site/
+          cp -r map_image _site/
+          cp data/atlas.json data/community.json data/index.json data/example-player.json _site/data/
+          cp -r data/players _site/data/
+          node -e "require('fs').writeFileSync('_site/site-config.js', 'window.GITHUB_REPOSITORY = '+JSON.stringify(process.env.REPOSITORY)+';')"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+
