@@ -11,7 +11,7 @@ for(let x=Math.floor(min.x/64);x<=Math.floor(max.x/64);x++)for(let y=Math.floor(
 if(typeof drawDigs==='function')drawDigs(min,max);
 if(view.zoom>=10){ctx.strokeStyle='#ffffff15';ctx.lineWidth=1;ctx.beginPath();for(let x=Math.ceil(min.x);x<max.x;x++){const px=width/2+(x-view.x)*view.zoom;ctx.moveTo(px,0);ctx.lineTo(px,height)}for(let y=Math.ceil(min.y);y<max.y;y++){const py=height/2-(y-view.y)*view.zoom;ctx.moveTo(0,py);ctx.lineTo(width,py)}ctx.stroke()}
 if(hover){ctx.strokeStyle='#edd8a2';ctx.lineWidth=1.5;ctx.strokeRect(width/2+(Math.floor(hover.x)-view.x)*view.zoom,height/2-(Math.floor(hover.y)+1-view.y)*view.zoom,view.zoom,view.zoom)}
-$('#status').textContent=`${available.size.toLocaleString()} supplied regions · ${visible?'Surface map':'No map regions here'}`;$('#scale').textContent=`${view.zoom.toFixed(1)} pixels / tile`;
+$('#scale').textContent=`${view.zoom.toFixed(1)} pixels / tile`;
 if(cache.size>240)for(const key of cache.keys()){const [p,x,y]=key.split('_').map(Number);if(p!==view.plane||x*64<min.x-128||x*64>max.x+128||y*64<min.y-128||y*64>max.y+128)cache.delete(key);if(cache.size<=180)break}}
 function zoom(factor,x=width/2,y=height/2){const anchor=world(x,y);view.zoom=Math.max(.3,Math.min(24,view.zoom*factor));view.x=anchor.x-(x-width/2)/view.zoom;view.y=anchor.y+(y-height/2)/view.zoom;requestDraw()}
 new ResizeObserver(()=>{const r=canvas.getBoundingClientRect(),dpr=devicePixelRatio||1;width=r.width;height=r.height;canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);requestDraw()}).observe(canvas);
@@ -23,6 +23,7 @@ canvas.addEventListener('wheel',e=>{e.preventDefault();const p=local(e);zoom(Mat
 canvas.onkeydown=e=>{const step=80/view.zoom;if(e.key==='ArrowLeft')view.x-=step;else if(e.key==='ArrowRight')view.x+=step;else if(e.key==='ArrowUp')view.y+=step;else if(e.key==='ArrowDown')view.y-=step;else if(e.key==='+'||e.key==='=')zoom(1.3);else if(e.key==='-')zoom(1/1.3);else return;e.preventDefault();requestDraw()};
 $('#plus').onclick=()=>zoom(1.3);$('#minus').onclick=()=>zoom(1/1.3);$('#home').onclick=()=>{Object.assign(view,{x:3222,y:3218,zoom:4,plane:0});hover=null;requestDraw()};
 requestDraw();
+
 
 
 
